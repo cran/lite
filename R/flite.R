@@ -44,7 +44,7 @@
 #'   \code{\link{returnLevel}}.  Alternatively, \code{ny} can be supplied in
 #'   a later call to \code{\link{returnLevel}}.  If \code{ny} is supplied to
 #'   both \code{flite} and \code{\link{returnLevel}} then the value supplied to
-#'   \code{\link{returnLevel}} will take precedence.
+#'   \code{\link{returnLevel}} will take precedence, with no warning given.
 #' @param ... Further arguments to be passed to the function
 #'   \code{\link[sandwich:vcovCL]{meatCL}} in the sandwich package.
 #'   In particular, the clustering adjustment argument \code{cadjust}
@@ -52,10 +52,13 @@
 #' @details There are 3 independent parts to the inference, all performed using
 #'   maximum likelihood estimation.
 #'     \enumerate{
-#'       \item{A Bernoulli(\eqn{p_u}) model for whether a given observation
-#'         exceeds the threshold \eqn{u}.}
-#'       \item{A generalised Pareto, GP(\eqn{\sigma_u}, \eqn{\xi}), model for
-#'         the marginal distribution of threshold excesses.}
+#'       \item{A Bernoulli(\ifelse{html}{\eqn{p}\out{<sub>u</sub>}}{\eqn{p_u}})
+#'         model for whether a given observation exceeds the threshold
+#'         \eqn{u}.}
+#'       \item{A generalised Pareto,
+#'         GP(\ifelse{html}{\eqn{\sigma}\out{<sub>u</sub>}}{\eqn{\sigma_u}},
+#'         \eqn{\xi}), model for the marginal distribution of threshold
+#'         excesses.}
 #'       \item{The \eqn{K}-gaps model for the extremal index \eqn{\theta}.}
 #'     }
 #'   The general approach follows Fawcett and Walshaw (2012).
@@ -63,7 +66,9 @@
 #'   For parts 1 and 2, inferences based on a mis-specified independence
 #'   log-likelihood are adjusted to account for clustering in the data. Here,
 #'   we follow Chandler and Bate (2007) to estimate adjusted log-likelihood
-#'   functions for \eqn{p_u} and for (\eqn{\sigma_u}, \eqn{\xi}), with the
+#'   functions for \ifelse{html}{\eqn{p}\out{<sub>u</sub>}}{\eqn{p_u}}
+#'   and for (\ifelse{html}{\eqn{\sigma}\out{<sub>u</sub>}}{\eqn{\sigma_u}},
+#'   \eqn{\xi}), with the
 #'   argument \code{cluster} defining the clusters. This aspect of the
 #'   calculations is performed using the \code{\link[chandwich]{adjust_loglik}}
 #'   in the \code{\link[chandwich]{chandwich}} package (Northrop and Chandler,
@@ -81,17 +86,22 @@
 #'   package has a function \code{\link[exdex]{choose_uk}} to inform this
 #'   choice.
 #'
-#'   Each of part of the inference produces a log-likelihood function (adjusted
+#'   Each part of the inference produces a log-likelihood function (adjusted
 #'   for parts 1 and 2).  These log-likelihoods are combined (summed) to form
 #'   a log-likelihood function for the parameter vector
-#'   \eqn{(p_u, \sigma_u, \xi, \theta)}.  Return levels are a function of these
+#'   (\ifelse{html}{\eqn{p}\out{<sub>u</sub>}}{\eqn{p_u}},
+#'   \ifelse{html}{\eqn{\sigma}\out{<sub>u</sub>}}{\eqn{\sigma_u}},
+#'   \eqn{\xi}, \eqn{\theta}).  Return levels are a function of these
 #'   parameters and therefore inferences for return levels can be based on
 #'   this log-likelihood.
 #' @return An object of class \code{c("flite", "lite", "chandwich")}.
 #'   This object is a function with 2 arguments:
 #'     \itemize{
 #'       \item{\code{pars}, a numeric vector of length 4 to supply the value of
-#'         the parameter vector \eqn{(p_u, \sigma_u, \xi, \theta)},}
+#'         the parameter vector
+#'         (\ifelse{html}{\eqn{p}\out{<sub>u</sub>}}{\eqn{p_u}},
+#'         \ifelse{html}{\eqn{\sigma}\out{<sub>u</sub>}}{\eqn{\sigma_u}},
+#'         \eqn{\xi}, \eqn{\theta}),}
 #'       \item{\code{type}, a character scalar specifying the type of
 #'         adjustment made to the independence log-likelihood in parts
 #'         1 and 2, one of \code{"vertical"}, \code{"none"}, \code{"cholesky"},
@@ -101,16 +111,19 @@
 #'         \code{\link{plot.flite}}.}
 #'     }
 #'  The object also has the attributes \code{"Bernoulli"}, \code{"gp"},
-#'  \code{"kgaps"}, which provide the fitted model objects returned from
+#'  \code{"theta"}, which provide the fitted model objects returned from
 #'  \code{\link[chandwich]{adjust_loglik}} (for \code{"Bernoulli"} and
-#'  \code{"gp"}) and \code{\link[exdex]{kgaps}} (for \code{"kgaps"}).
-#'
+#'  \code{"gp"}) and \code{\link[exdex]{kgaps}} (for \code{"theta"}).
 #'  The named input arguments are returned in a list as the attribute
 #'  \code{inputs}.  If \code{ny} was not supplied then its value is \code{NA}.
+#'  The call to \code{flite} is provided in the attribute \code{"call"}.
 #'
-#'   Objects inheriting from class \code{"flite"} have \code{coef},
-#'   \code{logLik}, \code{nobs}, \code{plot}, \code{summary} and \code{vcov}
-#'   methods.  See \code{\link{fliteMethods}}.
+#'  Objects inheriting from class \code{"flite"} have \code{coef},
+#'  \code{logLik}, \code{nobs}, \code{plot}, \code{summary}, \code{vcov}
+#'  and \code{confint} methods.  See \code{\link{fliteMethods}}.
+#'
+#'  \code{\link{returnLevel}} can be used to make frequentist inferences about
+#'   return levels.
 #' @references Chandler, R. E. and Bate, S. (2007). Inference for clustered.
 #'   data using the independence loglikelihood. \emph{Biometrika},
 #'   \strong{94}(1), 167-183. \doi{10.1093/biomet/asm015}
@@ -131,7 +144,14 @@
 #'   Applied Statistics}, \strong{4}(1), 203-221.
 #'   \doi{10.1214/09-AOAS292}
 #' @seealso \code{\link{fliteMethods}}, including plotting (adjusted)
-#'   log-likelihoods for \eqn{(p_u, \sigma_u, \xi, \theta)}.
+#'   log-likelihoods for
+#'   (\ifelse{html}{\eqn{p}\out{<sub>u</sub>}}{\eqn{p_u}},
+#'   \ifelse{html}{\eqn{\sigma}\out{<sub>u</sub>}}{\eqn{\sigma_u}},
+#'   \eqn{\xi}, \eqn{\theta}).
+#' @seealso \code{\link{returnLevel}} to make frequentist inferences about
+#'   return levels.
+#' @seealso \code{\link{blite}} for Bayesian threshold-based inference
+#'   for time series extremes.
 #' @seealso \code{\link{Bernoulli}} for maximum likelihood inference for the
 #'   Bernoulli distribution.
 #' @seealso \code{\link{generalisedPareto}} for maximum likelihood inference
@@ -157,6 +177,12 @@
 #' # Plots of (adjusted) log-likelihoods
 #' plot(cfit)
 #' plot(cfit, which = "gp")
+#'
+#' ## Confidence intervals
+#' # Based on an adjusted profile log-likelihood
+#' confint(cfit)
+#' # Symmetric intervals based on large sample normality
+#' confint(cfit, profile= FALSE)
 #' @export
 flite <- function(data, u, cluster, k = 1, inc_cens = TRUE, ny, ...) {
   # Check that the threshold does not lie above all the data
@@ -224,7 +250,7 @@ flite <- function(data, u, cluster, k = 1, inc_cens = TRUE, ny, ...) {
   #    via the exdex::kgaps()
   #
   # exdex::kgaps() accept the original data matrix and omit missings itself
-  theta_fit <- exdex::kgaps(data = data, u = u, k = 1, inc_cens = TRUE)
+  theta_fit <- exdex::kgaps(data = data, u = u, k = k, inc_cens = inc_cens)
   loglik_theta <- function(tval) {
     theta_list <- c(list(theta = tval), theta_fit$ss)
     return(do.call(kgaps_loglik, theta_list))
@@ -243,10 +269,11 @@ flite <- function(data, u, cluster, k = 1, inc_cens = TRUE, ny, ...) {
     names(val) <- NULL
     return(val)
   }
+  # Set the class of the return object and add attributes
   class(bernoulli_gp_theta_loglik) <- c("flite", "lite", "chandwich")
   attr(bernoulli_gp_theta_loglik, "Bernoulli") <- aloglik_bernoulli
   attr(bernoulli_gp_theta_loglik, "gp") <- aloglik_gp
-  attr(bernoulli_gp_theta_loglik, "kgaps") <- theta_fit
+  attr(bernoulli_gp_theta_loglik, "theta") <- theta_fit
   attr(bernoulli_gp_theta_loglik, "call") <- match.call(expand.dots = TRUE)
   inputs <- list(data = data, u = u, cluster = cluster, k = k,
                  inc_cens = inc_cens, ny = ny)

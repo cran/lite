@@ -5,21 +5,27 @@
 
 [![AppVeyor Build
 Status](https://ci.appveyor.com/api/projects/status/github/paulnorthrop/lite?branch=main&svg=true)](https://ci.appveyor.com/project/paulnorthrop/lite)
+[![R-CMD-check](https://github.com/paulnorthrop/lite/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/paulnorthrop/lite/actions/workflows/R-CMD-check.yaml)
 [![Coverage
 Status](https://codecov.io/github/paulnorthrop/lite/coverage.svg?branch=main)](https://codecov.io/github/paulnorthrop/lite?branch=main)
+[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/lite)](https://cran.r-project.org/package=lite)
+[![Downloads
+(monthly)](https://cranlogs.r-pkg.org/badges/lite?color=brightgreen)](https://cran.r-project.org/package=lite)
+[![Downloads
+(total)](https://cranlogs.r-pkg.org/badges/grand-total/lite?color=brightgreen)](https://cran.r-project.org/package=lite)
 
 ## Likelihood-Based Inference for Time Series Extremes
 
 The **lite** package performs likelihood-based inference for stationary
 time series extremes. The general approach follows [Fawcett and Walshaw
 (2012)](https://doi.org/10.1002/env.2133). There are 3 independent parts
-to the inference, all performed using maximum likelihood estimation.
+to the inference.
 
-1.  A Bernoulli(*p*<sub>*u*</sub>) model for whether a given observation
-    exceeds the threshold *u*.
-2.  A generalised Pareto, GP(*σ*<sub>*u*</sub>,*ξ*), model for the
+1.  A Bernoulli (*p*<sub>*u*</sub>) model for whether a given
+    observation exceeds the threshold $u$.
+2.  A generalised Pareto, GP (*σ*<sub>*u*</sub>,*ξ*), model for the
     marginal distribution of threshold excesses.
-3.  The *K*-gaps model for the extremal index *θ*, based on
+3.  The $K$-gaps model for the extremal index $\theta$, based on
     inter-exceedance times.
 
 For parts 1 and 2 it is necessary to adjust the inferences because we
@@ -36,15 +42,16 @@ package](https://cran.r-project.org/package=exdex). The (adjusted)
 log-likelihoods from parts 1, 2 and 3 are combined to make inferences
 about return levels.
 
-### An example: Cheeseboro wind gusts
-
-The function `flite` makes inferences about
-(*p*<sub>*u*</sub>,*σ*<sub>*u*</sub>,*ξ*,*θ*). We illustrate this using
-the `cheeseboro` data from the [exdex
+We illustrate the main functions in `lite` using the `cheeseboro` wind
+gusts data from the [exdex
 package](https://cran.r-project.org/package=exdex), which contains
 hourly wind gust data from each January over the 10-year period
 2000-2009.
 
+### Frequentist inference
+
+The function `flite` makes frequentist inferences about
+$(p_u, \sigma_u, \xi, \theta)$ using maximum likelihood estimation.
 First, we make inferences about the model parameters.
 
 ``` r
@@ -53,11 +60,21 @@ cdata <- exdex::cheeseboro
 # Each column of the matrix cdata corresponds to data from a different year
 # flite() sets cluster automatically to correspond to column (year)
 cfit <- flite(cdata, u = 45, k = 3)
+summary(cfit)
+#> 
+#> Call:
+#> flite(data = cdata, u = 45, k = 3)
+#> 
+#>          Estimate Std. Error
+#> p[u]      0.02771   0.005988
+#> sigma[u]  9.27400   2.071000
+#> xi       -0.09368   0.084250
+#> theta     0.24050   0.023360
 ```
 
 Then, we make inferences about the 100-year return level, including 95%
 confidence intervals. The argument `ny` sets the number of observations
-per year, which is 31 × 24 = 744 for these data.
+per year, which is $31 \times 24 = 744$ for these data.
 
 ``` r
 rl <- returnLevel(cfit, m = 100, level = 0.95, ny = 31 * 24)
@@ -70,11 +87,46 @@ rl
 #> 
 #> Normal interval:
 #>  lower     mle   upper  
-#>  70.36   90.73  111.09  
+#>  69.80   88.62  107.44  
 #> Profile likelihood-based interval:
 #>  lower     mle   upper  
-#>  77.29   90.73  132.57
+#>  75.89   88.62  125.43
 ```
+
+### Bayesian inference
+
+The function `blite` performs Bayesian inferences about
+$(p_u, \sigma_u, \xi, \theta)$, based on a likelihood constructed from
+the (adjusted) log-likelihoods detailed above. First, we sample from the
+posterior distribution of the parameters, using the default priors.
+
+``` r
+cpost <- blite(cdata, u = 45, k = 3, ny = 31 * 24)
+summary(cpost)
+#> 
+#> Call:
+#> blite(data = cdata, u = 45, k = 3, ny = 31 * 24)
+#> 
+#>          Posterior mean Posterior SD
+#> p[u]            0.02832     0.006008
+#> sigma[u]       10.03000     2.435000
+#> xi             -0.07196     0.094030
+#> theta           0.24250     0.024040
+```
+
+Then, we estimate a 95% highest predictive density (HPD) interval for
+the largest value $M_{100}$ to be observed over a future time period of
+length $100$ years.
+
+``` r
+predict(cpost, hpd = TRUE, n_years = 100)$short
+#>         lower    upper n_years level
+#> [1,] 73.09008 139.8616     100    95
+```
+
+Objects returned from `flite` and `blite` have `plot` methods to
+summarise graphically, respectively, log-likelihoods and posterior
+distributions.
 
 ### Installation
 
@@ -84,7 +136,7 @@ To get the current released version from CRAN:
 install.packages("lite")
 ```
 
-### Vignette
+### Vignettes
 
-See `vignette("introduction-to-lite", package = "lite")` for an overview
-of the package.
+See `vignette("lite-1-frequentist", package = "lite")` and
+`vignette("lite-2-bayesian", package = "lite")`.

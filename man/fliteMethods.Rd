@@ -9,6 +9,7 @@
 \alias{logLik.flite}
 \alias{summary.flite}
 \alias{print.summary.flite}
+\alias{confint.flite}
 \title{Methods for objects of class \code{"flite"}}
 \usage{
 \method{plot}{flite}(
@@ -29,6 +30,15 @@
 \method{summary}{flite}(object, adjust = TRUE, digits = max(3, getOption("digits") - 3L), ...)
 
 \method{print}{summary.flite}(x, ...)
+
+\method{confint}{flite}(
+  object,
+  parm = "all",
+  level = 0.95,
+  adj_type = c("vertical", "none", "cholesky", "spectral"),
+  profile = TRUE,
+  ...
+)
 }
 \arguments{
 \item{x}{An object inheriting from class \code{"flite"}, a result of a
@@ -47,46 +57,74 @@ the type of adjustment applied to the independence log-likelihood.  Of the
 3 adjustments, \code{"vertical"} is preferred because it preserves
 constraints on the parameters, whereas the \code{"cholesky"} and
 \code{"spectral"} adjustment do not.  In the generalised Pareto case the
-constraint that \eqn{\xi > - \sigma_u / x_{(n)}}{\xi > \sigma_u / x_(n)},
-where \eqn{x_{(n)}}{x_(n)} is the largest excesses of the threshold \eqn{u},
-is preserved.}
+constraint that
+\ifelse{html}{\eqn{\xi} > -\eqn{\sigma}\out{<sub>u</sub>} /
+\eqn{x}\out{<sub>(n)</sub>}}{\eqn{\xi > -\sigma_u / x_{(n)}}}
+where \ifelse{html}{\eqn{x}\out{<sub>(n)</sub>}}{\eqn{x_{(n)}}}
+is the largest excesses of the threshold \eqn{u}, is preserved.}
 
 \item{...}{For \code{plot.flite}: arguments passed to
   \code{\link[graphics:plot.default]{plot}}, such as graphical parameters.
 
   For \code{print.summary.flite}: additional arguments passed to
-  \code{\link{print.default}}.}
+  \code{\link{print.default}}.
 
-\item{object}{An object inheriting from class \code{"flite"}, a result of a
-call to \code{\link{flite}}.}
+  Otherwise \code{...} is unused.}
+
+\item{object}{An object of class \code{"flite"}, returned by
+\code{\link{flite}}.}
 
 \item{adjust}{A logical scalar.  If \code{adjust = TRUE} then the elements
 of the variance-covariance matrix corresponding to
-\eqn{(p_u, \sigma_u, \xi)} are estimated using a sandwich estimator.
-See \code{\link{flite}}.  Otherwise, this matrix is the inverse of the
-observed information matrix.}
+(\ifelse{html}{\eqn{p}\out{<sub>u</sub>},
+\eqn{\sigma}\out{<sub>u</sub>}}{\eqn{p_u}, \eqn{\sigma_u}}, \eqn{\xi}),
+are estimated using a sandwich estimator. See \code{\link{flite}}.
+Otherwise, this matrix is the inverse of the observed information matrix.}
 
 \item{digits}{An integer. Passed to \code{\link[base:Round]{signif}} to
 round the values in the summary.}
+
+\item{parm}{A character vector specifying the parameters for which
+confidence intervals are required. The default, \code{which = "all"},
+produces confidence intervals for all the parameters, that is,
+\ifelse{html}{\eqn{p}\out{<sub>u</sub>}}{\eqn{p_u}},
+\ifelse{html}{\eqn{\sigma}\out{<sub>u</sub>}}{\eqn{\sigma_u}},
+\eqn{\xi} and \eqn{\theta}. If \code{which = "gp"} then intervals are
+produced only for
+\ifelse{html}{\eqn{\sigma}\out{<sub>u</sub>}}{\eqn{\sigma_u}} and
+\eqn{\xi}. Otherwise, \code{parm} must be a subset of
+\code{c("pu", "sigmau", "xi", "theta")}.}
+
+\item{level}{The confidence level required.  A numeric scalar in (0, 1).}
+
+\item{profile}{A logical scalar. If \code{TRUE} then confidence intervals
+based on an (adjusted) profile loglikelihood are returned.  If
+\code{FALSE} then intervals based on approximate large sample normal
+theory, which are symmetric about the MLE, are returned.}
 }
 \value{
 \code{plot.flite}: No return value, only the plot is produced.
 
   \code{coef.flite}: a numeric vector of length 4 with names
     \code{c("p[u]", "sigma[u]", "xi", "theta")}.  The MLEs of the parameters
-    \eqn{p_u}, \eqn{\sigma_u}, \eqn{\xi} and \eqn{\theta}.
+    \ifelse{html}{\eqn{p}\out{<sub>u</sub>}}{\eqn{p_u}},
+    \ifelse{html}{\eqn{\sigma}\out{<sub>u</sub>}}{\eqn{\sigma_u}},
+    \eqn{\xi} and \eqn{\theta}.
 
   \code{vcov.flite}: a \eqn{4 \times 4}{4 x 4} matrix with row and
     column names \code{c("p[u]", "sigma[u]", "xi", "theta")}.  The estimated
     variance-covariance matrix for the model parameters.  If
-    \code{adjust = TRUE} then the elements corresponding to \eqn{p_u},
-    \eqn{\sigma_u} and \eqn{\xi} are adjusted for cluster dependence using
+    \code{adjust = TRUE} then the elements corresponding to
+    \ifelse{html}{\eqn{p}\out{<sub>u</sub>}}{\eqn{p_u}},
+    \ifelse{html}{\eqn{\sigma}\out{<sub>u</sub>}}{\eqn{\sigma_u}},
+    and \eqn{\xi} are adjusted for cluster dependence using
     a sandwich estimator; otherwise they are not adjusted.
 
   \code{nobs.flite}: a numeric vector of length 3 with names
     \code{c("p[u]", "gp", "theta")}.  The respective number of observations
-    used to estimate \eqn{p_u}, (\eqn{\sigma_u}, \eqn{\xi}) and
-    \eqn{\theta}.
+    used to estimate \ifelse{html}{\eqn{p}\out{<sub>u</sub>}}{\eqn{p_u}},
+    (\ifelse{html}{\eqn{\sigma}\out{<sub>u</sub>}}{\eqn{\sigma_u}},
+    \eqn{\xi}) and \eqn{\theta}.
 
   \code{logLik.flite}: an object of class \code{"logLik"}: a numeric scalar
     with value equal to the maximised log-likelihood.  This is the sum of
@@ -104,27 +142,40 @@ round the values in the summary.}
     \code{\link{print.summary.flite}}.
 
   \code{print.summary.flite}: the argument \code{x} is returned, invisibly.
+
+  \code{confint.flite}: a numeric matrix with 2 columns giving the lower and
+    upper confidence limits for each parameter. These columns are labelled
+    as \code{(1-level)/2} and \code{1-(1-level)/2}, expressed as a
+    percentage, by default \code{2.5\%} and \code{97.5\%}.  The row names
+    are the names of the parameters supplied in \code{parm}.
 }
 \description{
 Methods for objects of class \code{"flite"} returned from
 \code{\link{flite}}.
 }
 \details{
-For \code{plot.flite}, if \code{which = "all"} then 4 plots are produced.
+For \code{plot.flite}, if \code{which = "all"} then 4 plots are
+  produced.
     \itemize{
       \item{Top left: (adjusted) log-likelihood for the threshold exceedence
-        probability \eqn{p_u}, with a horizontal line indicating a
-        95\% confidence interval for \eqn{p_u}.}
-      \item{Top right: contour plot of the (adjusted) log-likelihood for the
-        GP parameters \eqn{(\sigma_u, \xi)}, showing
-        (25, 50, 75, 90, 95)\% confidence regions. The linear constraint
-        \eqn{\xi > - \sigma_u / x_{(n)}}{\xi > \sigma_u / x_(n)} is drawn
-        on the plot.}
-      \item{Bottom left: (adjusted) log-likelihood for \eqn{\xi}, with a
-        horizontal line indicating a 95\% confidence interval for \eqn{\xi}.}
-      \item{Bottom right: log-likelihood for the extremal index \eqn{\theta},
+        probability \ifelse{html}{\eqn{p}\out{<sub>u</sub>}}{\eqn{p_u}},
         with a horizontal line indicating a 95\% confidence interval for
-        \eqn{\theta}.}
+        \ifelse{html}{\eqn{p}\out{<sub>u</sub>}}{\eqn{p_u}}.}
+      \item{Top right: contour plot of the (adjusted) log-likelihood for the
+        GP parameters
+        (\ifelse{html}{\eqn{\sigma}\out{<sub>u</sub>}}{\eqn{\sigma_u}},
+        \eqn{\xi}),
+        showing (25, 50, 75, 90, 95)\% confidence regions. The linear
+        constraint
+        \ifelse{html}{\eqn{\xi} > -\eqn{\sigma}\out{<sub>u</sub>} / \eqn{x}
+        \out{<sub>(n)</sub>}}{\eqn{\xi > -\sigma_u / x_{(n)}}} is drawn on
+        the plot.}
+      \item{Bottom left: (adjusted) log-likelihood for \eqn{\xi}, with a
+        horizontal line indicating a 95\% confidence interval for
+        \eqn{\xi}.}
+      \item{Bottom right: log-likelihood for the extremal index
+        \eqn{\theta}, with a horizontal line indicating a 95\% confidence
+        interval for \eqn{\theta}.}
     }
 }
 \seealso{
