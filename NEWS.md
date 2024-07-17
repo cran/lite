@@ -1,3 +1,9 @@
+# lite 1.1.1
+
+## Bug fixes and minor improvements
+
+* Fixed 2 \link{} targets with missing (exdex) package anchors in Rd files for `blite()` and `flite()`
+
 # lite 1.1.0
 
 ## New features

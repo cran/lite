@@ -10,10 +10,11 @@
 #'   (independent) contributions from different columns. A common situation is
 #'   where each column relates to a different year.
 #'
-#'   If \code{data} contains missing values then \code{\link{split_by_NAs}} is
-#'   used to divide the data further into sequences of non-missing values,
-#'   stored in different columns in a matrix.  Again, the log-likelihood
-#'   is constructed as a sum of contributions from different columns.
+#'   If \code{data} contains missing values then
+#'   \code{\link[exdex]{split_by_NAs}} is used to divide the data further into
+#'   sequences of non-missing values, stored in different columns in a matrix.
+#'   Again, the log-likelihood is constructed as a sum of contributions from
+#'   different columns.
 #' @param u A numeric scalar.  The extreme value threshold applied to the data.
 #'   See \strong{Details} for information about choosing \code{u}.
 #' @param cluster This argument is used to set the argument \code{cluster} to
@@ -182,7 +183,7 @@
 #' # Based on an adjusted profile log-likelihood
 #' confint(cfit)
 #' # Symmetric intervals based on large sample normality
-#' confint(cfit, profile= FALSE)
+#' confint(cfit, profile = FALSE)
 #' @export
 flite <- function(data, u, cluster, k = 1, inc_cens = TRUE, ny, ...) {
   # Check that the threshold does not lie above all the data
@@ -213,7 +214,7 @@ flite <- function(data, u, cluster, k = 1, inc_cens = TRUE, ny, ...) {
     }
   } else {
     if (is.matrix(data)) {
-      if (dim(cluster) != dim(data)) {
+      if (!all(dim(cluster) == dim(data))) {
         stop("cluster is a matrix: dim(cluster) must equal dim(data)")
       }
       # Make cluster a vector

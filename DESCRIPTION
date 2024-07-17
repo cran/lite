@@ -1,7 +1,7 @@
 Package: lite
 Title: Likelihood-Based Inference for Time Series Extremes
-Version: 1.1.0
-Date: 2023-01-27
+Version: 1.1.1
+Date: 2024-07-17
 Authors@R: person(c("Paul", "J."), "Northrop", email = "p.northrop@ucl.ac.uk",
   role = c("aut", "cre", "cph"))
 Description: Performs likelihood-based inference for stationary time series 
@@ -26,8 +26,8 @@ URL: https://paulnorthrop.github.io/lite/,
 BugReports: https://github.com/paulnorthrop/lite/issues
 Config/testthat/edition: 3
 NeedsCompilation: no
-Packaged: 2023-01-27 00:08:36 UTC; paul
+Packaged: 2024-07-17 18:01:52 UTC; Paul
 Author: Paul J. Northrop [aut, cre, cph]
 Maintainer: Paul J. Northrop <p.northrop@ucl.ac.uk>
 Repository: CRAN
-Date/Publication: 2023-01-27 00:30:06 UTC
+Date/Publication: 2024-07-17 18:20:02 UTC

@@ -1,4 +1,4 @@
-## ---- include = FALSE---------------------------------------------------------
+## ----include = FALSE----------------------------------------------------------
 knitr::opts_chunk$set(comment = "#>", collapse = TRUE)
 
 required <- c("exdex", "revdbayes")
@@ -6,7 +6,7 @@ required <- c("exdex", "revdbayes")
 if (!all(unlist(lapply(required, function(pkg) requireNamespace(pkg, quietly = TRUE)))))
   knitr::opts_chunk$set(eval = FALSE)
 
-## ---- include = FALSE---------------------------------------------------------
+## ----include = FALSE----------------------------------------------------------
 knitr::opts_chunk$set(comment = "#>", collapse = TRUE)
 
 ## ----cheeseboro---------------------------------------------------------------

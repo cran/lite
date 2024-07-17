@@ -12,10 +12,11 @@ flite(data, u, cluster, k = 1, inc_cens = TRUE, ny, ...)
   (independent) contributions from different columns. A common situation is
   where each column relates to a different year.
 
-  If \code{data} contains missing values then \code{\link{split_by_NAs}} is
-  used to divide the data further into sequences of non-missing values,
-  stored in different columns in a matrix.  Again, the log-likelihood
-  is constructed as a sum of contributions from different columns.}
+  If \code{data} contains missing values then
+  \code{\link[exdex]{split_by_NAs}} is used to divide the data further into
+  sequences of non-missing values, stored in different columns in a matrix.
+  Again, the log-likelihood is constructed as a sum of contributions from
+  different columns.}
 
 \item{u}{A numeric scalar.  The extreme value threshold applied to the data.
 See \strong{Details} for information about choosing \code{u}.}
@@ -164,7 +165,7 @@ plot(cfit, which = "gp")
 # Based on an adjusted profile log-likelihood
 confint(cfit)
 # Symmetric intervals based on large sample normality
-confint(cfit, profile= FALSE)
+confint(cfit, profile = FALSE)
 }
 \references{
 Chandler, R. E. and Bate, S. (2007). Inference for clustered.

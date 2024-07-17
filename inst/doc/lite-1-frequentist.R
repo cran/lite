@@ -1,4 +1,4 @@
-## ---- include = FALSE---------------------------------------------------------
+## ----include = FALSE----------------------------------------------------------
 knitr::opts_chunk$set(comment = "#>", collapse = TRUE)
 
 required <- c("exdex")
@@ -6,7 +6,7 @@ required <- c("exdex")
 if (!all(unlist(lapply(required, function(pkg) requireNamespace(pkg, quietly = TRUE)))))
   knitr::opts_chunk$set(eval = FALSE)
 
-## ---- include = FALSE---------------------------------------------------------
+## ----include = FALSE----------------------------------------------------------
 knitr::opts_chunk$set(comment = "#>", collapse = TRUE)
 
 ## ----cheesy, echo = FALSE, fig.width = 7, fig.height = 5----------------------
